@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crucigramas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alineación en la parte superior */
+            height: 120vh; /* Ajustar el tamaño al 120% de la altura de la ventana */
+            margin-top: 2rem; /* Margen superior para dejar espacio para el encabezado */
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 3rem; /* Distancia de 3 cm por debajo de la primera imagen */
+        }
+
+        .image-container img {
+            max-width: 100%; /* Ancho máximo de la imagen */
+            height: auto; /* Altura automática para mantener la proporción */
+            display: block;
+            margin: 0 auto; /* Centrar la imagen horizontalmente */
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Crucigramas</h1>
+    </header>
+    <main>
+        <section id="crucigramas">
+            <div class="image-container">
+                <img src="C:\Escritorio\Tareas Progreso\6to semestre\Innovatec\Juegos/Crucigrama.jpg" alt="Crucigrama">
+            </div>
+            <div class="image-container">
+                <img src="Pista.jpg" alt="Pista">
+            </div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const crucigramasJuego = document.getElementById('crucigramas-juego');
+            // Lógica para el juego de crucigramas
+        });
+    </script>
+</body>
+</html>

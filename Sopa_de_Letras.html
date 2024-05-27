@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+
+        .word-list {
+            position: relative;
+            top: 3cm;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #333;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .word-list li.found {
+            text-decoration: line-through;
+            color: green;
+        }
+
+        .word-search {
+            display: grid;
+            grid-template-columns: repeat(15, 1.5cm);
+            gap: 2px;
+            width: calc(15 * 1.5cm);
+            margin: 0 auto;
+        }
+
+        .word-search span {
+            display: inline-block;
+            width: 1.5cm;
+            height: 1.5cm;
+            text-align: center;
+            line-height: 1.5cm;
+            background-color: white;
+            border: 1px solid #999;
+            user-select: none;
+            font-size: 1rem;
+        }
+
+        .word-search span.selected {
+            background-color: green;
+            color: white;
+        }
+
+        .congrats-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background-color: #fff;
+            border: 3px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            font-size: 2rem;
+            color: #333;
+            opacity: 0;
+        }
+
+        @keyframes showCongrats {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sopa de Letras</h1>
+    </header>
+    <main>
+        <section id="sopa-de-letras">
+            <h2>Sopa de Letras: Estrés</h2>
+            <div id="sopa-de-letras-juego" class="word-search"></div>
+        </section>
+        <div class="word-list">
+            <p>Palabras a encontrar:</p>
+            <ul>
+                <li data-word="ANSIEDAD">Ansiedad</li>
+                <li data-word="DOLOR">Dolor</li>
+                <li data-word="FATIGA">Fatiga</li>
+                <li data-word="IRRITABILIDAD">Irritabilidad</li>
+                <li data-word="PREOCUPACION">Preocupación</li>
+                <li data-word="DECISION">Decisión</li>
+                <li data-word="INSOMNIO">Insomnio</li>
+                <li data-word="NERVIOSISMO">Nerviosismo</li>
+                <li data-word="TENSION">Tensión</li>
+            </ul>
+        </div>
+    </main>
+    <div class="congrats-message" id="congrats-message">
+        ¡Felicidades, has ganado!
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wordSearch = document.querySelector('.word-search');
+            const wordListItems = document.querySelectorAll('.word-list li');
+            const words = Array.from(wordListItems).map(item => item.getAttribute('data-word'));
+            const congratsMessage = document.getElementById('congrats-message');
+
+            let selectedCells = [];
+            let isMouseDown = false;
+
+            function createWordSearch() {
+                const grid = Array(15).fill(null).map(() => Array(15).fill(''));
+                placeWordsInGrid(grid, words);
+                fillEmptyCells(grid);
+
+                grid.forEach(row => {
+                    row.forEach(letter => {
+                        const cell = document.createElement('span');
+                        cell.textContent = letter;
+                        cell.addEventListener('mousedown', () => {
+                            isMouseDown = true;
+                            toggleCellSelection(cell);
+                        });
+                        cell.addEventListener('mouseover', () => {
+                            if (isMouseDown) {
+                                toggleCellSelection(cell);
+                            }
+                        });
+                        wordSearch.appendChild(cell);
+                    });
+                });
+            }
+
+            function placeWordsInGrid(grid, words) {
+                words.forEach(word => {
+                    let placed = false;
+                    while (!placed) {
+                        const direction = Math.floor(Math.random() * 2); // 0 = horizontal, 1 = vertical
+                        const row = Math.floor(Math.random() * (15 - (direction ? word.length : 1)));
+                        const col = Math.floor(Math.random() * (15 - (direction ? 1 : word.length)));
+
+                        if (canPlaceWord(grid, word, row, col, direction)) {
+                            for (let i = 0; i < word.length; i++) {
+                                grid[row + (direction ? i : 0)][col + (direction ? 0 : i)] = word[i];
+                            }
+                            placed = true;
+                        }
+                    }
+                });
+            }
+
+            function canPlaceWord(grid, word, row, col, direction) {
+                for (let i = 0; i < word.length; i++) {
+                    if (grid[row + (direction ? i : 0)][col + (direction ? 0 : i)] !== '') {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function fillEmptyCells(grid) {
+                grid.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        if (cell === '') {
+                            grid[rowIndex][colIndex] = randomLetter();
+                        }
+                    });
+                });
+            }
+
+            function toggleCellSelection(cell) {
+                if (!cell.classList.contains('selected')) {
+                    cell.classList.add('selected');
+                    selectedCells.push(cell);
+                }
+            }
+
+            function randomLetter() {
+                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            }
+
+            function checkSelectedWord() {
+                const selectedWord = selectedCells.map(cell => cell.textContent).join('');
+                if (words.includes(selectedWord)) {
+                    selectedCells.forEach(cell => cell.classList.add('found'));
+                    selectedCells = [];
+                    const listItem = document.querySelector(`.word-list li[data-word="${selectedWord}"]`);
+                    listItem.classList.add('found');
+                    checkIfAllWordsFound();
+                } else {
+                    selectedCells.forEach(cell => cell.classList.remove('selected'));
+                    selectedCells = [];
+                }
+            }
+
+            function checkIfAllWordsFound() {
+                const allWordsFound = Array.from(wordListItems).every(item => item.classList.contains('found'));
+                if (allWordsFound) {
+                    congratsMessage.style.opacity = 1;
+                    congratsMessage.style.animation = 'showCongrats 5s forwards';
+                }
+            }
+
+            createWordSearch();
+
+            document.addEventListener('mouseup', () => {
+                if (isMouseDown) {
+                    isMouseDown = false;
+                    checkSelectedWord();
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                if (isMouseDown) {
+                    isMouseDown = false;
+                    selectedCells.forEach(cell => cell.classList.remove('selected'));
+                    selectedCells = [];
+                }
+            });
+        });
+    </script>
+</body>
+</html>
