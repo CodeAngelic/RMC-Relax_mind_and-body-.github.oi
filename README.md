@@ -1,1 +1,1 @@
-Relax Mind and Body
+RMC (Relax Mind and Body)
